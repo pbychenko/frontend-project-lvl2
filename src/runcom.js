@@ -7,7 +7,7 @@ const runApp = () => {
     .option('-f, --format [type]', 'Output format')
     .arguments('<firstConfig> <secondConfig>')
     .action((firstConfig, secondConfig) => {
-      console.log(genDiff(firstConfig, secondConfig)  );
+      console.log(genDiff(firstConfig, secondConfig));
     })
     .parse(process.argv);
 };
