@@ -11,7 +11,7 @@ before_script:
 
 env:
   global:
-    CC_TEST_REPORTER_ID=721a554df75316e0e1d8ad42c1986011f20a621559961f2fcfca6c1e88a835dd
+   - CC_TEST_REPORTER_ID=721a554df75316e0e1d8ad42c1986011f20a621559961f2fcfca6c1e88a835dd
 
 script:
   - make lint
