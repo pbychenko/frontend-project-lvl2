@@ -2,6 +2,7 @@ import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
 import yaml from 'js-yaml';
+import ini from 'ini';
 
 const parse = (pathToFile1, pathToFile2) => {
   const extname1 = path.extname(pathToFile1);
@@ -19,6 +20,10 @@ const parse = (pathToFile1, pathToFile2) => {
       case '.yaml':
         beforeContent = yaml.safeLoad(fs.readFileSync(`${pathToFile1}`, 'utf8'));
         afterContent = yaml.safeLoad(fs.readFileSync(`${pathToFile2}`, 'utf8'));
+        break;
+      case '.ini':
+        beforeContent = ini.parse(fs.readFileSync(`${pathToFile1}`, 'utf8'));
+        afterContent = ini.parse(fs.readFileSync(`${pathToFile2}`, 'utf8'));
         break;
       default:
         break;
