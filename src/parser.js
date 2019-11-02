@@ -4,8 +4,6 @@ import ini from 'ini';
 import fs from 'fs';
 
 const parse = (pathToFile1, pathToFile2) => {
-  // console.log(pathToFile1);
-  // console.log(pathToFile2);
   const extname1 = path.extname(pathToFile1);
   const extname2 = path.extname(pathToFile2);
 

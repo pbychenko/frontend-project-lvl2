@@ -3,23 +3,32 @@ import parse from './parser';
 
 export const render = (diff, spaceCount) => {
   let k = 0;
+  const indent = ' '.repeat(spaceCount);
   const getPrefix = (e) => {
-    if (e.status === 'common') {
-      return `${' '.repeat(spaceCount)}  `;
+    let prefix;
+    switch (e.status) {
+      case 'common':
+        prefix = `${indent}  `;
+        break;
+      case 'changed':
+        if (k === 0) {
+          k = 1;
+          prefix = `${indent}- `;
+        } else {
+          k = 0;
+          prefix = `${indent}+ `;
+        }
+        break;
+      case 'added':
+        prefix = `${indent}+ `;
+        break;
+      case 'removed':
+        prefix = `${indent}- `;
+        break;
+      default:
+        break;
     }
-    if (e.status === 'changed') {
-      if (k === 0) {
-        k = 1;
-        return `${' '.repeat(spaceCount)}- `;
-      }
-      k = 0;
-      return `${' '.repeat(spaceCount)}+ `;
-    }
-
-    if (e.status === 'added') {
-      return `${' '.repeat(spaceCount)}+ `;
-    }
-    return `${' '.repeat(spaceCount)}- `;
+    return prefix;
   };
 
   const f = (e) => {
@@ -67,7 +76,6 @@ const diff = (beforeContent, afterContent) => {
     return { key, value: afterContent[key], status: 'added' };
   };
   return _.flatten(uniqKeys.map(f));
-  // return uniqKeys.map(f);
 };
 
 export const genDiff = (pathToFile1, pathToFile2) => {
