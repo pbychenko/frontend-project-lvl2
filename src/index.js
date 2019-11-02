@@ -1,61 +1,76 @@
-import fs from 'fs';
 import _ from 'lodash';
-import path from 'path';
-import yaml from 'js-yaml';
-import ini from 'ini';
+import parse from './parser';
 
-const parse = (pathToFile1, pathToFile2) => {
-  const extname1 = path.extname(pathToFile1);
-  const extname2 = path.extname(pathToFile2);
-
-  let beforeContent = {};
-  let afterContent = {};
-
-  if (extname1 === extname2) {
-    switch (extname1) {
-      case '.json':
-        beforeContent = JSON.parse(fs.readFileSync(`${pathToFile1}`, 'utf8'));
-        afterContent = JSON.parse(fs.readFileSync(`${pathToFile2}`, 'utf8'));
-        break;
-      case '.yaml':
-        beforeContent = yaml.safeLoad(fs.readFileSync(`${pathToFile1}`, 'utf8'));
-        afterContent = yaml.safeLoad(fs.readFileSync(`${pathToFile2}`, 'utf8'));
-        break;
-      case '.ini':
-        beforeContent = ini.parse(fs.readFileSync(`${pathToFile1}`, 'utf8'));
-        afterContent = ini.parse(fs.readFileSync(`${pathToFile2}`, 'utf8'));
-        break;
-      default:
-        break;
+export const render = (diff, spaceCount) => {
+  let k = 0;
+  const getPrefix = (e) => {
+    if (e.status === 'common') {
+      return `${' '.repeat(spaceCount)}  `;
     }
-  }
-  return { beforeContent, afterContent };
-};
-
-const genDiff = (pathToFile1, pathToFile2) => {
-  const { beforeContent, afterContent } = parse(pathToFile1, pathToFile2);
-  const result = [];
-
-  Object.keys(beforeContent).forEach((key) => {
-    if (_.has(afterContent, key)) {
-      if (beforeContent[key] === afterContent[key]) {
-        result.push(`    ${key}: ${beforeContent[key]}`);
-      } else {
-        result.push(`  + ${key}: ${afterContent[key]}`);
-        result.push(`  - ${key}: ${beforeContent[key]}`);
+    if (e.status === 'changed') {
+      if (k === 0) {
+        k = 1;
+        return `${' '.repeat(spaceCount)}- `;
       }
-    } else {
-      result.push(`  - ${key}: ${beforeContent[key]}`);
+      k = 0;
+      return `${' '.repeat(spaceCount)}+ `;
     }
-  });
 
-  Object.keys(afterContent).forEach((key) => {
-    if (!_.has(beforeContent, key)) {
-      result.push(`  + ${key}: ${afterContent[key]}`);
+    if (e.status === 'added') {
+      return `${' '.repeat(spaceCount)}+ `;
     }
-  });
+    return `${' '.repeat(spaceCount)}- `;
+  };
 
-  return `{\n${result.join('\n')}\n}`;
+  const f = (e) => {
+    if (e.children) {
+      return `${getPrefix(e)}${e.key}: ${render(e.children, spaceCount + 4)}`;
+    }
+
+    return `${getPrefix(e)}${e.key}: ${e.value}`;
+  };
+
+  const renderList = diff.map(f);
+
+  return `{\n${renderList.join('\n')}\n${' '.repeat(spaceCount - 2)}}`;
 };
 
-export default genDiff;
+const diff = (beforeContent, afterContent) => {
+  const uniqKeys = _.union(Object.keys(beforeContent), Object.keys(afterContent));
+  const f = (key) => {
+    if (_.has(beforeContent, key) && _.has(afterContent, key)) {
+      if (beforeContent[key] instanceof Object && afterContent[key] instanceof Object) {
+        return { key, value: '', status: 'common', children: diff(beforeContent[key], afterContent[key]) };
+      }
+      if (beforeContent[key] instanceof Object) {
+        return [{ key, value: '', status: 'changed', children: diff(beforeContent[key], beforeContent[key]) }, { key, value: afterContent[key], status: 'changed' } ];
+      }
+      if (afterContent[key] instanceof Object) {
+        return [ {key, value: beforeContent[key], status: 'changed'}, {key, value: '', status: 'changed', children: diff(afterContent[key], afterContent[key])}]
+      }
+      if (beforeContent[key] === afterContent[key]) {
+        return { key, value: beforeContent[key], status: 'common' };
+      } 
+      return [{ key, value: beforeContent[key], status: 'changed' }, { key, value: afterContent[key], status: 'changed' }];
+    }
+
+    if (_.has(beforeContent, key)) {
+      if (beforeContent[key] instanceof Object) {
+        return { key, value: '', status: 'removed', children: diff(beforeContent[key], beforeContent[key]) };
+      } 
+      return { key, value: beforeContent[key], status: 'removed' };
+    }
+
+    if (afterContent[key] instanceof Object) {
+      return { key, value: '', status: 'added', children: diff(afterContent[key], afterContent[key]) };
+    }
+    return { key, value: afterContent[key], status: 'added' };
+  };
+  return _.flatten(uniqKeys.map(f));
+  // return uniqKeys.map(f);
+};
+
+export const genDiff = (pathToFile1, pathToFile2) => {
+  const { beforeContent, afterContent } = parse(pathToFile1, pathToFile2);
+  return diff(beforeContent, afterContent);
+};
