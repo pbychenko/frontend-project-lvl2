@@ -18,61 +18,82 @@ test('Check different json files', () => {
   const expPath = `${__dirname}/__fixtures__/results/result1`;
 
   const expected = fs.readFileSync(`${expPath}`, 'utf8');
-  expect(render(genDiff(jsonFilepath1, jsonFilepath2), 2)).toBe(expected);
+  expect(render(genDiff(jsonFilepath1, jsonFilepath2), 'simple')).toBe(expected);
 });
 
 test('Check equal json files', () => {
   const expPath = `${__dirname}/__fixtures__/results/result2`;
 
   const expected = fs.readFileSync(`${expPath}`, 'utf8');
-  expect(render(genDiff(jsonFilepath1, jsonFilepath1), 2)).toBe(expected);
+  expect(render(genDiff(jsonFilepath1, jsonFilepath1), 'simple')).toBe(expected);
 });
 
 test('Check different yaml files', () => {
   const expPath = `${__dirname}/__fixtures__/results/result1`;
 
   const expected = fs.readFileSync(`${expPath}`, 'utf8');
-  expect(render(genDiff(yamlFilepath1, yamlFilepath2), 2)).toBe(expected);
+  expect(render(genDiff(yamlFilepath1, yamlFilepath2), 'simple')).toBe(expected);
 });
 
 test('Check equal yaml files', () => {
   const expPath = `${__dirname}/__fixtures__/results/result2`;
 
   const expected = fs.readFileSync(`${expPath}`, 'utf8');
-  expect(render(genDiff(yamlFilepath1, yamlFilepath1), 2)).toBe(expected);
+  expect(render(genDiff(yamlFilepath1, yamlFilepath1), 'simple')).toBe(expected);
 });
 
 test('Check different ini files', () => {
   const expPath = `${__dirname}/__fixtures__/results/result1`;
 
   const expected = fs.readFileSync(`${expPath}`, 'utf8');
-  expect(render(genDiff(iniFilepath1, iniFilepath2), 2)).toBe(expected);
+  expect(render(genDiff(iniFilepath1, iniFilepath2), 'simple')).toBe(expected);
 });
 
 test('Check equal ini files', () => {
   const expPath = `${__dirname}/__fixtures__/results/result2`;
 
   const expected = fs.readFileSync(`${expPath}`, 'utf8');
-  expect(render(genDiff(iniFilepath1, iniFilepath1), 2)).toBe(expected);
+  expect(render(genDiff(iniFilepath1, iniFilepath1), 'simple')).toBe(expected);
 });
 
-test('Check big different json files', () => {
+test('Check big different json files in simple format', () => {
   const expPath = `${__dirname}/__fixtures__/results/result3`;
 
   const expected = fs.readFileSync(`${expPath}`, 'utf8');
-  expect(render(genDiff(jsonBigBeforeFilepath1, jsonBigAfterFilepath2), 2)).toBe(expected);
+  expect(render(genDiff(jsonBigBeforeFilepath1, jsonBigAfterFilepath2), 'simple')).toBe(expected);
 });
 
 test('Check big different yaml files', () => {
   const expPath = `${__dirname}/__fixtures__/results/result3`;
 
   const expected = fs.readFileSync(`${expPath}`, 'utf8');
-  expect(render(genDiff(yamlBigBeforeFilepath1, yamlBigAfterFilepath2), 2)).toBe(expected);
+  expect(render(genDiff(yamlBigBeforeFilepath1, yamlBigAfterFilepath2), 'simple')).toBe(expected);
 });
 
 test('Check big different ini files', () => {
   const expPath = `${__dirname}/__fixtures__/results/result3`;
 
   const expected = fs.readFileSync(`${expPath}`, 'utf8');
-  expect(render(genDiff(iniBigBeforeFilepath1, iniBigAfterFilepath2), 2)).toBe(expected);
+  expect(render(genDiff(iniBigBeforeFilepath1, iniBigAfterFilepath2), 'simple')).toBe(expected);
+});
+
+test('Check big different json files in plain format', () => {
+  const expPath = `${__dirname}/__fixtures__/results/result4`;
+
+  const expected = fs.readFileSync(`${expPath}`, 'utf8');
+  expect(render(genDiff(jsonBigBeforeFilepath1, jsonBigAfterFilepath2), 'plain')).toBe(expected);
+});
+
+test('Check big different yaml files in plain format', () => {
+  const expPath = `${__dirname}/__fixtures__/results/result4`;
+
+  const expected = fs.readFileSync(`${expPath}`, 'utf8');
+  expect(render(genDiff(yamlBigBeforeFilepath1, yamlBigAfterFilepath2), 'plain')).toBe(expected);
+});
+
+test('Check big different ini files in plain format', () => {
+  const expPath = `${__dirname}/__fixtures__/results/result4`;
+
+  const expected = fs.readFileSync(`${expPath}`, 'utf8');
+  expect(render(genDiff(iniBigBeforeFilepath1, iniBigAfterFilepath2), 'plain')).toBe(expected);
 });

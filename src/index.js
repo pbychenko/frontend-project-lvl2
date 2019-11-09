@@ -1,47 +1,16 @@
 import _ from 'lodash';
 import parse from './parser';
+import renderSimpleDiff from './formatters/simple';
+import renderPlainDiff from './formatters/plain';
 
-export const render = (diff, spaceCount) => {
-  let k = 0;
-  const indent = ' '.repeat(spaceCount);
-  const getPrefix = (e) => {
-    let prefix;
-    switch (e.status) {
-      case 'common':
-        prefix = `${indent}  `;
-        break;
-      case 'changed':
-        if (k === 0) {
-          k = 1;
-          prefix = `${indent}- `;
-        } else {
-          k = 0;
-          prefix = `${indent}+ `;
-        }
-        break;
-      case 'added':
-        prefix = `${indent}+ `;
-        break;
-      case 'removed':
-        prefix = `${indent}- `;
-        break;
-      default:
-        break;
-    }
-    return prefix;
-  };
+export const render = (data, type) => {
+  if (type === 'simple') {
+    return renderSimpleDiff(data, 2);
+  }
 
-  const f = (e) => {
-    if (e.children) {
-      return `${getPrefix(e)}${e.key}: ${render(e.children, spaceCount + 4)}`;
-    }
-
-    return `${getPrefix(e)}${e.key}: ${e.value}`;
-  };
-
-  const renderList = diff.map(f);
-
-  return `{\n${renderList.join('\n')}\n${' '.repeat(spaceCount - 2)}}`;
+  if (type === 'plain') {
+    return renderPlainDiff(data);
+  }
 };
 
 const diff = (beforeContent, afterContent) => {
