@@ -1,5 +1,5 @@
 import commander from 'commander';
-import { genDiff, render } from '.';
+import genDiff from '.';
 
 const runApp = () => {
   commander.version('0.0.1')
@@ -7,7 +7,7 @@ const runApp = () => {
     .option('-f, --format [type]', 'Output format', 'simple')
     .arguments('<firstConfig> <secondConfig>')
     .action((firstConfig, secondConfig) => {
-      console.log(render(genDiff(firstConfig, secondConfig), commander.format));
+      console.log(genDiff(firstConfig, secondConfig, commander.format));
     })
     .parse(process.argv);
 };
