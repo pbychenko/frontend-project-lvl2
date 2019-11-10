@@ -1,6 +1,6 @@
 const renderPlainDiff = (diff) => {
   const pd = (data, path) => {
-    let k = 0;
+    let isFirstChanged = true;
     const f = (e) => {
       const value = e.children ? '[complex value]' : e.value;
       const fullPath = (path === '') ? e.key : `${path}.${e.key}`;
@@ -14,12 +14,12 @@ const renderPlainDiff = (diff) => {
           diffElement = `Property '${fullPath}' was added with value: ${value}\n`;
           break;
         case 'changed':
-          if (k === 0) {
-            k = 1;
+          if (isFirstChanged) {
+            isFirstChanged = false;
             diffElement = `Property '${fullPath}' was updated. From ${value}`;
             break;
           }
-          k = 0;
+          isFirstChanged = true;
           diffElement = ` to ${value}\n`;
           break;
         case 'common':

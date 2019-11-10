@@ -1,18 +1,19 @@
 const renderSimpleDiff = (diff, spaceCount = 2) => {
-  let k = 0;
+  let isFirstChanged = true;
   const indent = ' '.repeat(spaceCount);
-  const getPrefix = (e) => {
+
+  const f = (e) => {
     let prefix;
     switch (e.status) {
       case 'common':
         prefix = `${indent}  `;
         break;
       case 'changed':
-        if (k === 0) {
-          k = 1;
+        if (isFirstChanged) {
+          isFirstChanged = false;
           prefix = `${indent}- `;
         } else {
-          k = 0;
+          isFirstChanged = true;
           prefix = `${indent}+ `;
         }
         break;
@@ -25,15 +26,12 @@ const renderSimpleDiff = (diff, spaceCount = 2) => {
       default:
         break;
     }
-    return prefix;
-  };
 
-  const f = (e) => {
     if (e.children) {
-      return `${getPrefix(e)}${e.key}: ${renderSimpleDiff(e.children, spaceCount + 4)}`;
+      return `${prefix}${e.key}: ${renderSimpleDiff(e.children, spaceCount + 4)}`;
     }
 
-    return `${getPrefix(e)}${e.key}: ${e.value}`;
+    return `${prefix}${e.key}: ${e.value}`;
   };
 
   const renderList = diff.map(f);
