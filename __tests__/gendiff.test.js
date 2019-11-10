@@ -97,3 +97,24 @@ test('Check big different ini files in plain format', () => {
   const expected = fs.readFileSync(`${expPath}`, 'utf8');
   expect(render(genDiff(iniBigBeforeFilepath1, iniBigAfterFilepath2), 'plain')).toBe(expected);
 });
+
+test('Check big different json files in json format', () => {
+  const expPath = `${__dirname}/__fixtures__/results/result5`;
+
+  const expected = fs.readFileSync(`${expPath}`, 'utf8');
+  expect(render(genDiff(jsonBigBeforeFilepath1, jsonBigAfterFilepath2), 'json')).toBe(expected);
+});
+
+test('Check big different yaml files in json format', () => {
+  const expPath = `${__dirname}/__fixtures__/results/result5`;
+
+  const expected = fs.readFileSync(`${expPath}`, 'utf8');
+  expect(render(genDiff(yamlBigBeforeFilepath1, yamlBigAfterFilepath2), 'json')).toBe(expected);
+});
+
+test('Check big different ini files in json format', () => {
+  const expPath = `${__dirname}/__fixtures__/results/result5`;
+
+  const expected = fs.readFileSync(`${expPath}`, 'utf8');
+  expect(render(genDiff(iniBigBeforeFilepath1, iniBigAfterFilepath2), 'json')).toBe(expected);
+});
