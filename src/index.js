@@ -10,33 +10,34 @@ const getAst = (beforeContent, afterContent) => {
   const f = (key) => {
     if (_.has(beforeContent, key) && _.has(afterContent, key)) {
       if (beforeContent[key] instanceof Object && afterContent[key] instanceof Object) {
-        return { key, status: 'common', children: getAst(beforeContent[key], afterContent[key]) };
+        return { key, state: 'common', value: getAst(beforeContent[key], afterContent[key]) };
       }
       if (beforeContent[key] instanceof Object) {
-        return [{ key, status: 'changed', children: getAst(beforeContent[key], beforeContent[key]) }, { key, value: afterContent[key], status: 'changed' }];
+        return { key, state: 'changed', value: getAst(beforeContent[key], beforeContent[key]), newValue: afterContent[key] };
       }
       if (afterContent[key] instanceof Object) {
-        return [{ key, value: beforeContent[key], status: 'changed' }, { key, status: 'changed', children: getAst(afterContent[key], afterContent[key]) }];
+        return { key, state: 'changed', value: beforeContent[key], newValue: getAst(afterContent[key], afterContent[key]) };
       }
       if (beforeContent[key] === afterContent[key]) {
-        return { key, value: beforeContent[key], status: 'common' };
+        return { key, state: 'common', value: beforeContent[key] };
       }
-      return [{ key, value: beforeContent[key], status: 'changed' }, { key, value: afterContent[key], status: 'changed' }];
+      return { key, value: beforeContent[key], state: 'changed', newValue: afterContent[key] };
     }
 
     if (_.has(beforeContent, key)) {
       if (beforeContent[key] instanceof Object) {
-        return { key, status: 'removed', children: getAst(beforeContent[key], beforeContent[key]) };
+        return { key, state: 'removed', value: getAst(beforeContent[key], beforeContent[key]) };
       }
-      return { key, value: beforeContent[key], status: 'removed' };
+      return { key, state: 'removed', value: beforeContent[key] };
     }
 
     if (afterContent[key] instanceof Object) {
-      return { key, status: 'added', children: getAst(afterContent[key], afterContent[key]) };
+      return { key, state: 'added', value: getAst(afterContent[key], afterContent[key]) };
     }
-    return { key, value: afterContent[key], status: 'added' };
+    return { key, state: 'added', value: afterContent[key] };
   };
-  return _.flatten(uniqKeys.map(f));
+  // return _.flatten(uniqKeys.map(f));
+  return uniqKeys.map(f);
 };
 
 const render = (data, type) => {

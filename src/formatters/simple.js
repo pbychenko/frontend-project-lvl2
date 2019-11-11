@@ -1,40 +1,33 @@
+import _ from 'lodash';
+
 const renderSimpleDiff = (diff, spaceCount = 2) => {
-  let isFirstChanged = true;
   const indent = ' '.repeat(spaceCount);
 
   const f = (e) => {
-    let prefix;
-    switch (e.status) {
-      case 'common':
-        prefix = `${indent}  `;
-        break;
-      case 'changed':
-        if (isFirstChanged) {
-          isFirstChanged = false;
-          prefix = `${indent}- `;
-        } else {
-          isFirstChanged = true;
-          prefix = `${indent}+ `;
-        }
-        break;
-      case 'added':
-        prefix = `${indent}+ `;
-        break;
-      case 'removed':
-        prefix = `${indent}- `;
-        break;
-      default:
-        break;
+    const statePrefix = {
+      common: `${indent}  `,
+      added: `${indent}+ `,
+      removed: `${indent}- `,
+    };
+
+    if (e.value instanceof Array) {
+      if (e.state === 'changed') {
+        return [`${statePrefix.removed}${e.key}: ${renderSimpleDiff(e.value, spaceCount + 4)}`, `${statePrefix.added}${e.key}: ${e.newValue}`];
+      }
+      return `${statePrefix[e.state]}${e.key}: ${renderSimpleDiff(e.value, spaceCount + 4)}`;
     }
 
-    if (e.children) {
-      return `${prefix}${e.key}: ${renderSimpleDiff(e.children, spaceCount + 4)}`;
+    if (e.state === 'changed') {
+      if (e.newValue instanceof Array) {
+        return [`${statePrefix.removed}${e.key}: ${e.value}`, `${statePrefix.added}${e.key}: ${renderSimpleDiff(e.newValue, spaceCount + 4)}`];
+      }
+      return [`${statePrefix.removed}${e.key}: ${e.value}`, `${statePrefix.added}${e.key}: ${e.newValue}`];
     }
 
-    return `${prefix}${e.key}: ${e.value}`;
+    return `${statePrefix[e.state]}${e.key}: ${e.value}`;
   };
 
-  const renderList = diff.map(f);
+  const renderList = _.flatten(diff.map(f));
 
   return `{\n${renderList.join('\n')}\n${' '.repeat(spaceCount - 2)}}`;
 };
