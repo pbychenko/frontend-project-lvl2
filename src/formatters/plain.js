@@ -1,44 +1,31 @@
-const renderPlainDiff = (diff) => {
-  const pd = (data, path) => {
-    let isFirstChanged = true;
-    const f = (e) => {
-      const value = e.children ? '[complex value]' : e.value;
-      const fullPath = (path === '') ? e.key : `${path}.${e.key}`;
-      let diffElement;
+const formatValue = (value) => {
+  if (value instanceof Array) {
+    return '[complex value]';
+  }
+  if (typeof value === 'string') {
+    return `'${value}'`;
+  }
+  return value;
+};
 
-      switch (e.status) {
-        case 'removed':
-          diffElement = `Property '${fullPath}' was removed\n`;
-          break;
-        case 'added':
-          diffElement = `Property '${fullPath}' was added with value: ${value}\n`;
-          break;
-        case 'changed':
-          if (isFirstChanged) {
-            isFirstChanged = false;
-            diffElement = `Property '${fullPath}' was updated. From ${value}`;
-            break;
-          }
-          isFirstChanged = true;
-          diffElement = ` to ${value}\n`;
-          break;
-        case 'common':
-          if (e.children) {
-            diffElement = pd(e.children, fullPath);
-          }
-          break;
-        default:
-          break;
-      }
-      return diffElement;
+const getPlainDiffByPath = (data, path) => {
+  const f = (e) => {
+    const value = formatValue(e.value);
+    const fullPath = (path === '') ? e.key : `${path}.${e.key}`;
+    const statePrefix = {
+      common: e.value instanceof Array ? `${getPlainDiffByPath(e.value, fullPath)}` : '',
+      added: `Property '${fullPath}' was added with value: ${value}`,
+      removed: `Property '${fullPath}' was removed`,
+      changed: `Property '${fullPath}' was updated. From ${value} to ${formatValue(e.newValue)}`,
     };
 
-    const renderList = data.map(f);
-    return renderList.join('');
+    return statePrefix[e.state];
   };
 
-  const result = pd(diff, '');
-  return result.substring(0, result.length - 1);
+  const renderList = data.map(f).filter((e) => e !== '');
+  return renderList.join('\n');
 };
+
+const renderPlainDiff = (diff) => getPlainDiffByPath(diff, '');
 
 export default renderPlainDiff;

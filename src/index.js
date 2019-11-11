@@ -36,7 +36,6 @@ const getAst = (beforeContent, afterContent) => {
     }
     return { key, state: 'added', value: afterContent[key] };
   };
-  // return _.flatten(uniqKeys.map(f));
   return uniqKeys.map(f);
 };
 
