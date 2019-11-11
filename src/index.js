@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import path from 'path';
 import parse from './parser';
 import renderSimpleDiff from './formatters/simple';
 import renderPlainDiff from './formatters/plain';
@@ -48,9 +49,17 @@ const render = (data, type) => {
 };
 
 const genDiff = (pathToFile1, pathToFile2, type) => {
-  const { beforeContent, afterContent } = parse(pathToFile1, pathToFile2);
-  const ast = getAst(beforeContent, afterContent);
-  return render(ast, type);
+  const extname1 = path.extname(pathToFile1);
+  const extname2 = path.extname(pathToFile2);
+  const errorMessage = 'Different extnames of files, please compare only files with equal extname';
+
+  if (extname1 === extname2) {
+    const { beforeContent, afterContent } = parse(pathToFile1, pathToFile2, extname1);
+    const ast = getAst(beforeContent, afterContent);
+    return render(ast, type);
+  }
+
+  return errorMessage;
 };
 
 export default genDiff;
