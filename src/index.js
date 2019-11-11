@@ -14,6 +14,7 @@ const getAst = (beforeContent, afterContent) => {
       }
       if (beforeContent[key] instanceof Object) {
         return { key, state: 'changed', value: getAst(beforeContent[key], beforeContent[key]), newValue: afterContent[key] };
+        // return { key, state: 'changed', value: beforeContent[key], newValue: afterContent[key] };
       }
       if (afterContent[key] instanceof Object) {
         return { key, state: 'changed', value: beforeContent[key], newValue: getAst(afterContent[key], afterContent[key]) };
@@ -21,7 +22,7 @@ const getAst = (beforeContent, afterContent) => {
       if (beforeContent[key] === afterContent[key]) {
         return { key, state: 'common', value: beforeContent[key] };
       }
-      return { key, value: beforeContent[key], state: 'changed', newValue: afterContent[key] };
+      return { key, state: 'changed', value: beforeContent[key], newValue: afterContent[key] };
     }
 
     if (_.has(beforeContent, key)) {
@@ -36,6 +37,23 @@ const getAst = (beforeContent, afterContent) => {
     }
     return { key, state: 'added', value: afterContent[key] };
   };
+//   if (_.has(beforeContent, key) && _.has(afterContent, key)) {
+//     if (beforeContent[key] instanceof Object && afterContent[key] instanceof Object) {
+//       return { key, state: 'common', value: getAst(beforeContent[key], afterContent[key]) };
+//     }
+
+//     if (beforeContent[key] === afterContent[key]) {
+//       return { key, state: 'common', value: beforeContent[key] };
+//     }
+//     return { key, state: 'changed', value: beforeContent[key], newValue: afterContent[key] };
+//   }
+
+//   if (_.has(beforeContent, key)) {
+//     return { key, state: 'removed', value: beforeContent[key] };
+//   }
+  
+//   return { key, state: 'added', value: afterContent[key] };
+// };
   return uniqKeys.map(f);
 };
 
