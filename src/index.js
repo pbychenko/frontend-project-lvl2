@@ -39,16 +39,12 @@ const getAst = (beforeContent, afterContent) => {
 };
 
 const render = (data, type) => {
-  switch (type) {
-    case 'simple':
-      return renderSimpleDiff(data, 2);
-    case 'plain':
-      return renderPlainDiff(data);
-    case 'json':
-      return renderJsonDiff(data);
-    default:
-      return renderPlainDiff(data);
-  }
+  const renderTypes = {
+    simple: renderSimpleDiff(data, 2),
+    plain: renderPlainDiff(data),
+    json: renderJsonDiff(data),
+  };
+  return renderTypes[type];
 };
 
 const genDiff = (pathToFile1, pathToFile2, type) => {
