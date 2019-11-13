@@ -1,7 +1,8 @@
 const formatValue = (value) => {
-  if (value instanceof Array) {
+  if (value instanceof Object) {
     return '[complex value]';
   }
+
   if (typeof value === 'string') {
     return `'${value}'`;
   }

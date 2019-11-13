@@ -1,5 +1,13 @@
 import _ from 'lodash';
 
+const formatValue = (value, gap) => {
+  if (value instanceof Object) {
+    return `{\n${Object.keys(value).map((key) => `${gap}    ${key}: ${value[key]}\n`)}${gap}}`;
+  }
+
+  return value;
+};
+
 const renderSimpleDiff = (diff, spaceCount = 2) => {
   const indent = ' '.repeat(spaceCount);
 
@@ -19,12 +27,12 @@ const renderSimpleDiff = (diff, spaceCount = 2) => {
 
     if (e.state === 'changed') {
       if (e.newValue instanceof Array) {
-        return [`${statePrefix.removed}${e.key}: ${e.value}`, `${statePrefix.added}${e.key}: ${renderSimpleDiff(e.newValue, spaceCount + 4)}`];
+        return [`${statePrefix.removed}${e.key}: ${formatValue(e.value, ' '.repeat(spaceCount + 2))}`, `${statePrefix.added}${e.key}: ${renderSimpleDiff(e.newValue, spaceCount + 2)}`];
       }
-      return [`${statePrefix.removed}${e.key}: ${e.value}`, `${statePrefix.added}${e.key}: ${e.newValue}`];
+      return [`${statePrefix.removed}${e.key}: ${formatValue(e.value, ' '.repeat(spaceCount + 2))}`, `${statePrefix.added}${e.key}: ${formatValue(e.newValue, ' '.repeat(spaceCount + 2))}`];
     }
 
-    return `${statePrefix[e.state]}${e.key}: ${e.value}`;
+    return `${statePrefix[e.state]}${e.key}: ${formatValue(e.value, ' '.repeat(spaceCount + 2))}`;
   };
 
   const renderList = _.flatten(diff.map(f));
