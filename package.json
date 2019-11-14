@@ -4,7 +4,7 @@
   "description": "Hexlet FE project 2",
   "keywords": [
     "hexlet",
-    "brain-games"
+    "gendiff"
   ],
   "main": "dist/index.js",
   "repository": {
