@@ -1,8 +1,4 @@
 const formatValue = (value) => {
-  if (value instanceof Object) {
-    return '[complex value]';
-  }
-
   if (typeof value === 'string') {
     return `'${value}'`;
   }
@@ -10,20 +6,20 @@ const formatValue = (value) => {
 };
 
 const getPlainDiffByPath = (data, path) => {
-  const f = (e) => {
-    const value = formatValue(e.value);
+  const func = (e) => {
+    const value = e.children ? '[complex value]' : formatValue(e.value);
     const fullPath = (path === '') ? e.key : `${path}.${e.key}`;
     const statePrefix = {
-      common: e.value instanceof Array ? `${getPlainDiffByPath(e.value, fullPath)}` : '',
+      common: e.children ? `${getPlainDiffByPath(e.children, fullPath)}` : '',
       added: `Property '${fullPath}' was added with value: ${value}`,
       removed: `Property '${fullPath}' was removed`,
-      changed: `Property '${fullPath}' was updated. From ${value} to ${formatValue(e.newValue)}`,
+      changed: `Property '${fullPath}' was updated. From ${value} to ${e.newChildren ? '[complex value]' : formatValue(e.newValue)}`,
     };
 
     return statePrefix[e.state];
   };
 
-  const renderList = data.map(f).filter((e) => e !== '');
+  const renderList = data.map(func).filter((e) => e !== '');
   return renderList.join('\n');
 };
 
