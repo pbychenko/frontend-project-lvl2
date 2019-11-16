@@ -1,4 +1,4 @@
 #!/usr/bin/env node
-import runApp from '../runcom';
+import runApp from '../app';
 
 runApp();
