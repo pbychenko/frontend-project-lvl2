@@ -9,7 +9,7 @@ const iniFilepath1 = `${__dirname}/__fixtures__/ini/before.ini`;
 const iniFilepath2 = `${__dirname}/__fixtures__/ini/after.ini`;
 
 describe('Check simple format', () => {
-  const expPath = `${__dirname}/__fixtures__/results/result3`;
+  const expPath = `${__dirname}/__fixtures__/results/simpleRenderExpectedResult`;
   const expected = fs.readFileSync(`${expPath}`, 'utf8');
   test('Check json files', () => {
     expect(genDiff(jsonFilepath1, jsonFilepath2, 'simple')).toBe(expected);
@@ -25,7 +25,7 @@ describe('Check simple format', () => {
 });
 
 describe('Check plain format', () => {
-  const expPath = `${__dirname}/__fixtures__/results/result4`;
+  const expPath = `${__dirname}/__fixtures__/results/plainRenderExpectedResult`;
   const expected = fs.readFileSync(`${expPath}`, 'utf8');
   test('Check json files', () => {
     expect(genDiff(jsonFilepath1, jsonFilepath2, 'plain')).toBe(expected);
@@ -41,7 +41,7 @@ describe('Check plain format', () => {
 });
 
 describe('Check json format', () => {
-  const expPath = `${__dirname}/__fixtures__/results/result5`;
+  const expPath = `${__dirname}/__fixtures__/results/jsonRenderExpectedResult`;
   const expected = fs.readFileSync(`${expPath}`, 'utf8');
   test('Check json files', () => {
     expect(genDiff(jsonFilepath1, jsonFilepath2, 'json')).toBe(expected);

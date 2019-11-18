@@ -52,23 +52,18 @@ const getAst = (beforeContent, afterContent) => {
 };
 
 const genDiff = (pathToFile1, pathToFile2, type) => {
-  const extName1 = path.extname(pathToFile1);
-  const extName2 = path.extname(pathToFile2);
-  const errorMessage = 'Different extnames of files, please compare only files with equal extname';
+  const extName1 = path.extname(pathToFile1).slice(1);
+  const extName2 = path.extname(pathToFile2).slice(1);
 
-  if (extName1 === extName2) {
-    const fileData1 = fs.readFileSync(`${pathToFile1}`, 'utf8');
-    const fileData1Obj = parse(fileData1, extName1);
+  const fileData1 = fs.readFileSync(`${pathToFile1}`, 'utf8');
+  const fileData1Obj = parse(fileData1, extName1);
 
-    const fileData2 = fs.readFileSync(`${pathToFile2}`, 'utf8');
-    const fileData2Obj = parse(fileData2, extName2);
+  const fileData2 = fs.readFileSync(`${pathToFile2}`, 'utf8');
+  const fileData2Obj = parse(fileData2, extName2);
 
-    const ast = getAst(fileData1Obj, fileData2Obj);
+  const ast = getAst(fileData1Obj, fileData2Obj);
 
-    return render(ast, type);
-  }
-
-  return errorMessage;
+  return render(ast, type);
 };
 
 export default genDiff;
