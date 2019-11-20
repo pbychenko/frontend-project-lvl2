@@ -2,21 +2,27 @@ const formatValue = (value) => {
   if (typeof value === 'string') {
     return `'${value}'`;
   }
+
+  if (value instanceof Object) {
+    return '[complex value]';
+  }
+
   return value;
 };
 
 const getPlainDiffByPath = (data, path) => {
   const func = (e) => {
-    const value = e.children ? '[complex value]' : formatValue(e.value);
+    const value = formatValue(e.value);
     const fullPath = (path === '') ? e.key : `${path}.${e.key}`;
-    const statePrefix = {
-      common: e.children ? `${getPlainDiffByPath(e.children, fullPath)}` : '',
+    const diffItem = {
+      common: e.value instanceof Array ? `${getPlainDiffByPath(e.value, fullPath)}` : '',
+      equal: '',
       added: `Property '${fullPath}' was added with value: ${value}`,
       removed: `Property '${fullPath}' was removed`,
-      changed: `Property '${fullPath}' was updated. From ${value} to ${e.newChildren ? '[complex value]' : formatValue(e.newValue)}`,
+      changed: `Property '${fullPath}' was updated. From ${value} to ${formatValue(e.newValue)}`,
     };
 
-    return statePrefix[e.state];
+    return diffItem[e.state];
   };
 
   const renderList = data.map(func).filter((e) => e !== '');
