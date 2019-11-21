@@ -1,12 +1,6 @@
 import yaml from 'js-yaml';
 import ini from 'ini';
 
-const formatParsers = {
-  json: JSON.parse,
-  yaml: yaml.safeLoad,
-  ini: ini.parse,
-};
-
 const convertNumbers = (obj) => {
   const keys = Object.keys(obj);
   const iter = (list, acc) => {
@@ -26,6 +20,14 @@ const convertNumbers = (obj) => {
   };
 
   return iter(keys, {});
+};
+
+const parseIni = (fileData) => convertNumbers(ini.parse(fileData));
+
+const formatParsers = {
+  json: JSON.parse,
+  yaml: yaml.safeLoad,
+  ini: parseIni,
 };
 
 const parse = (fileData, extname) => {
