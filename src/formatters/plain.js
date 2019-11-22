@@ -14,15 +14,19 @@ const getPlainDiffByPath = (data, path) => {
   const func = (e) => {
     const value = formatValue(e.value);
     const fullPath = (path === '') ? e.key : `${path}.${e.key}`;
-    const diffItem = {
-      common: e.value instanceof Array ? `${getPlainDiffByPath(e.value, fullPath)}` : '',
-      equal: '',
-      added: `Property '${fullPath}' was added with value: ${value}`,
-      removed: `Property '${fullPath}' was removed`,
-      changed: `Property '${fullPath}' was updated. From ${value} to ${formatValue(e.newValue)}`,
-    };
 
-    return diffItem[e.state];
+    switch (e.state) {
+      case 'common':
+        return `${getPlainDiffByPath(e.value, fullPath)}`;
+      case 'changed':
+        return `Property '${fullPath}' was updated. From ${value} to ${formatValue(e.newValue)}`;
+      case 'added':
+        return `Property '${fullPath}' was added with value: ${value}`;
+      case 'removed':
+        return `Property '${fullPath}' was removed`;
+      default:
+        return '';
+    }
   };
 
   const renderList = data.map(func).filter((e) => e !== '');

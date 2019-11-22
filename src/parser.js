@@ -30,11 +30,6 @@ const formatParsers = {
   ini: parseIni,
 };
 
-const parse = (fileData, extname) => {
-  if (extname !== 'ini') {
-    return formatParsers[extname](fileData);
-  }
-  return convertNumbers(formatParsers[extname](fileData));
-};
+const parse = (fileData, extname) => convertNumbers(formatParsers[extname](fileData));
 
 export default parse;

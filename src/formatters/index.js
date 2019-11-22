@@ -4,7 +4,7 @@ import renderJsonDiff from './json';
 
 const render = (data, type) => {
   const renderTypes = {
-    simple: renderSimpleDiff(data, 2),
+    simple: renderSimpleDiff(data),
     plain: renderPlainDiff(data),
     json: renderJsonDiff(data),
   };

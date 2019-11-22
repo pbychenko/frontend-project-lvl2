@@ -1,41 +1,42 @@
 import _ from 'lodash';
 
+const indentTemplate = '  ';
+const indentStep = 2;
+
 const formatValue = (value, indent) => {
-  if (value instanceof Object) {
-    return `{\n${Object.keys(value).map((key) => `${indent}${' '.repeat(4)}${key}: ${value[key]}\n`)}${indent}}`;
+  if (!(value instanceof Object)) {
+    return value;
   }
 
-  return value;
+  return `{\n${Object.keys(value).map((key) => `${indent}${indentTemplate.repeat(3)}${key}: ${value[key]}\n`)}${indent}${indentTemplate}}`;
 };
 
-const renderSimpleDiff = (diff, spaceCount = 2) => {
-  const indent = ' '.repeat(spaceCount);
+const getSimpleDiffWithIndent = (diff, indentCount) => {
+  const indent = indentTemplate.repeat(indentCount);
 
   const func = (e) => {
-    const statePrefix = {
-      common: `${indent}  `,
-      added: `${indent}+ `,
-      removed: `${indent}- `,
-      equal: `${indent}  `,
-    };
-
-    if (e.state === 'common') {
-      return `${statePrefix[e.state]}${e.key}: ${renderSimpleDiff(e.value, spaceCount + 4)}`;
+    switch (e.state) {
+      case 'common':
+        return `${indent}  ${e.key}: ${getSimpleDiffWithIndent(e.value, indentCount + indentStep)}`;
+      case 'changed':
+        return [
+          `${indent}- ${e.key}: ${formatValue(e.value, indent)}`,
+          `${indent}+ ${e.key}: ${formatValue(e.newValue, indent)}`,
+        ];
+      case 'added':
+        return `${indent}+ ${e.key}: ${formatValue(e.value, indent)}`;
+      case 'removed':
+        return `${indent}- ${e.key}: ${formatValue(e.value, indent)}`;
+      default:
+        return `${indent}  ${e.key}: ${formatValue(e.value, indent)}`;
     }
-
-    if (e.state === 'changed') {
-      return [
-        `${statePrefix.removed}${e.key}: ${formatValue(e.value, ' '.repeat(spaceCount + 2))}`,
-        `${statePrefix.added}${e.key}: ${formatValue(e.newValue, ' '.repeat(spaceCount + 2))}`,
-      ];
-    }
-
-    return `${statePrefix[e.state]}${e.key}: ${formatValue(e.value, ' '.repeat(spaceCount + 2))}`;
   };
 
   const renderList = _.flatten(diff.map(func));
 
-  return `{\n${renderList.join('\n')}\n${' '.repeat(spaceCount - 2)}}`;
+  return `{\n${renderList.join('\n')}\n${indentTemplate.repeat(indentCount - 1)}}`;
 };
+
+const renderSimpleDiff = (diff) => getSimpleDiffWithIndent(diff, 1);
 
 export default renderSimpleDiff;
