@@ -17,7 +17,7 @@ const getSimpleDiffWithIndent = (diff, indentCount) => {
   const func = (e) => {
     switch (e.state) {
       case 'common':
-        return `${indent}  ${e.key}: ${getSimpleDiffWithIndent(e.value, indentCount + indentStep)}`;
+        return `${indent}  ${e.key}: ${getSimpleDiffWithIndent(e.children, indentCount + indentStep)}`;
       case 'changed':
         return [
           `${indent}- ${e.key}: ${formatValue(e.value, indent)}`,

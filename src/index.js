@@ -8,7 +8,7 @@ const getAst = (beforeContent, afterContent) => {
   const uniqKeys = _.union(Object.keys(beforeContent), Object.keys(afterContent));
   const getAstElement = (key) => {
     if (beforeContent[key] instanceof Object && afterContent[key] instanceof Object) {
-      return { key, state: 'common', value: getAst(beforeContent[key], afterContent[key]) };
+      return { key, state: 'common', children: getAst(beforeContent[key], afterContent[key]) };
     }
 
     if (_.has(beforeContent, key) && _.has(afterContent, key)) {

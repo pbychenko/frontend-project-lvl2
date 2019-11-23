@@ -10,14 +10,16 @@ const formatValue = (value) => {
   return value;
 };
 
+const getPath = (path, key) => ((path === '') ? key : `${path}.${key}`);
+
 const getPlainDiffByPath = (data, path) => {
   const func = (e) => {
     const value = formatValue(e.value);
-    const fullPath = (path === '') ? e.key : `${path}.${e.key}`;
+    const fullPath = getPath(path, e.key);
 
     switch (e.state) {
       case 'common':
-        return `${getPlainDiffByPath(e.value, fullPath)}`;
+        return `${getPlainDiffByPath(e.children, fullPath)}`;
       case 'changed':
         return `Property '${fullPath}' was updated. From ${value} to ${formatValue(e.newValue)}`;
       case 'added':
