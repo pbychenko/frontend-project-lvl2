@@ -8,16 +8,17 @@ const formatValue = (value, indent) => {
     return value;
   }
 
-  return `{\n${Object.keys(value).map((key) => `${indent}${indentTemplate.repeat(3)}${key}: ${value[key]}\n`)}${indent}${indentTemplate}}`;
+  const func = (key) => `{\n${indent}${indentTemplate.repeat(3)}${key}: ${value[key]}\n${indent}${indentTemplate}}`;
+  return Object.keys(value).map(func);
 };
 
-const getSimpleDiffWithIndent = (diff, indentCount) => {
-  const indent = indentTemplate.repeat(indentCount);
+const getSimpleDiffByDepth = (diff, depth) => {
+  const indent = indentTemplate.repeat(depth);
 
   const func = (e) => {
     switch (e.state) {
-      case 'common':
-        return `${indent}  ${e.key}: ${getSimpleDiffWithIndent(e.children, indentCount + indentStep)}`;
+      case 'nested':
+        return `${indent}  ${e.key}: ${getSimpleDiffByDepth(e.children, depth + indentStep)}`;
       case 'changed':
         return [
           `${indent}- ${e.key}: ${formatValue(e.value, indent)}`,
@@ -27,16 +28,18 @@ const getSimpleDiffWithIndent = (diff, indentCount) => {
         return `${indent}+ ${e.key}: ${formatValue(e.value, indent)}`;
       case 'removed':
         return `${indent}- ${e.key}: ${formatValue(e.value, indent)}`;
-      default:
+      case 'equal':
         return `${indent}  ${e.key}: ${formatValue(e.value, indent)}`;
+      default:
+        return `Incorrect ast element: ${e.key}`;
     }
   };
 
   const renderList = _.flatten(diff.map(func));
 
-  return `{\n${renderList.join('\n')}\n${indentTemplate.repeat(indentCount - 1)}}`;
+  return `{\n${renderList.join('\n')}\n${indentTemplate.repeat(depth - 1)}}`;
 };
 
-const renderSimpleDiff = (diff) => getSimpleDiffWithIndent(diff, 1);
+const renderSimpleDiff = (diff) => getSimpleDiffByDepth(diff, 1);
 
 export default renderSimpleDiff;

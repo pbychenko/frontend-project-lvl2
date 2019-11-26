@@ -18,7 +18,7 @@ const getPlainDiffByPath = (data, path) => {
     const fullPath = getPath(path, e.key);
 
     switch (e.state) {
-      case 'common':
+      case 'nested':
         return `${getPlainDiffByPath(e.children, fullPath)}`;
       case 'changed':
         return `Property '${fullPath}' was updated. From ${value} to ${formatValue(e.newValue)}`;
@@ -26,8 +26,10 @@ const getPlainDiffByPath = (data, path) => {
         return `Property '${fullPath}' was added with value: ${value}`;
       case 'removed':
         return `Property '${fullPath}' was removed`;
-      default:
+      case 'equal':
         return '';
+      default:
+        return `Incorrect ast element: ${e.key}`;
     }
   };
 
