@@ -29,11 +29,20 @@ const getPlainDiffByPath = (data, path) => {
       case 'equal':
         return '';
       default:
-        return `Incorrect ast element: ${e.key}`;
+        throw new Error(`Incorrect ast element: ${e.key}`);
     }
   };
 
-  const renderList = data.map(func).filter((e) => e !== '');
+  const getRenderList = () => {
+    try {
+      return data.map(func).filter((e) => e !== '');
+    } catch (error) {
+      console.log(error.message);
+      return [];
+    }
+  };
+
+  const renderList = getRenderList();
   return renderList.join('\n');
 };
 

@@ -3,12 +3,15 @@ import _ from 'lodash';
 const indentTemplate = '  ';
 const indentStep = 2;
 
-const formatValue = (value, indent) => {
+const formatValue = (value, depth) => {
   if (!(value instanceof Object)) {
     return value;
   }
 
-  const func = (key) => `{\n${indent}${indentTemplate.repeat(3)}${key}: ${value[key]}\n${indent}${indentTemplate}}`;
+  const indent = indentTemplate.repeat(depth + indentStep + 1);
+  const closingIndent = indentTemplate.repeat(depth + 1);
+  const func = (key) => `{\n${indent}${key}: ${value[key]}\n${closingIndent}}`;
+
   return Object.keys(value).map(func);
 };
 
@@ -21,22 +24,30 @@ const getSimpleDiffByDepth = (diff, depth) => {
         return `${indent}  ${e.key}: ${getSimpleDiffByDepth(e.children, depth + indentStep)}`;
       case 'changed':
         return [
-          `${indent}- ${e.key}: ${formatValue(e.value, indent)}`,
-          `${indent}+ ${e.key}: ${formatValue(e.newValue, indent)}`,
+          `${indent}- ${e.key}: ${formatValue(e.value, depth)}`,
+          `${indent}+ ${e.key}: ${formatValue(e.newValue, depth)}`,
         ];
       case 'added':
-        return `${indent}+ ${e.key}: ${formatValue(e.value, indent)}`;
+        return `${indent}+ ${e.key}: ${formatValue(e.value, depth)}`;
       case 'removed':
-        return `${indent}- ${e.key}: ${formatValue(e.value, indent)}`;
+        return `${indent}- ${e.key}: ${formatValue(e.value, depth)}`;
       case 'equal':
-        return `${indent}  ${e.key}: ${formatValue(e.value, indent)}`;
+        return `${indent}  ${e.key}: ${formatValue(e.value, depth)}`;
       default:
-        return `Incorrect ast element: ${e.key}`;
+        throw new Error(`Incorrect ast element: ${e.key}`);
     }
   };
 
-  const renderList = _.flatten(diff.map(func));
+  const getRenderList = () => {
+    try {
+      return _.flatten(diff.map(func));
+    } catch (error) {
+      console.log(error.message);
+      return [];
+    }
+  };
 
+  const renderList = getRenderList();
   return `{\n${renderList.join('\n')}\n${indentTemplate.repeat(depth - 1)}}`;
 };
 
