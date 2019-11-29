@@ -19,7 +19,7 @@ const getPlainDiffByPath = (data, path) => {
 
     switch (e.state) {
       case 'nested':
-        return `${getPlainDiffByPath(e.children, fullPath)}`;
+        return getPlainDiffByPath(e.children, fullPath);
       case 'changed':
         return `Property '${fullPath}' was updated. From ${value} to ${formatValue(e.newValue)}`;
       case 'added':
@@ -33,16 +33,7 @@ const getPlainDiffByPath = (data, path) => {
     }
   };
 
-  const getRenderList = () => {
-    try {
-      return data.map(func).filter((e) => e !== '');
-    } catch (error) {
-      console.log(error.message);
-      return [];
-    }
-  };
-
-  const renderList = getRenderList();
+  const renderList = data.map(func).filter((e) => e !== '');
   return renderList.join('\n');
 };
 

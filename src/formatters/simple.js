@@ -38,16 +38,7 @@ const getSimpleDiffByDepth = (diff, depth) => {
     }
   };
 
-  const getRenderList = () => {
-    try {
-      return _.flatten(diff.map(func));
-    } catch (error) {
-      console.log(error.message);
-      return [];
-    }
-  };
-
-  const renderList = getRenderList();
+  const renderList = _.flatten(diff.map(func));
   return `{\n${renderList.join('\n')}\n${indentTemplate.repeat(depth - 1)}}`;
 };
 
